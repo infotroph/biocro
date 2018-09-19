@@ -1,2 +1,11 @@
-R --silent --vanilla -e "roxygen2::roxygenize('.', roclets='rd')"
+set -e
 
+function cleanup () {
+	rm .config.lock
+}
+trap cleanup EXIT
+
+if [[ ! -e .config.lock ]]; then # Avoid re-entry if roxygenize calls configure
+	touch .config.lock
+	R --silent --vanilla -e "roxygen2::roxygenize('.', roclets='rd')"
+fi
